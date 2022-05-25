@@ -1,13 +1,41 @@
+from PIL import ImageTk,Image
 
 class Piece():
     def __init__(self,col, typ):
         self.col = col #int value 0 for white 1 for black
         self.ty = typ #Placeholder
         self.img = None
+        self.x = 1
+        self.y = 0
     def __repr__(self):
         return self.ty
-    def __self__(self):
+    def __str__(self):
         return self.ty
+    def moveset(self):
+        print("top")
+    def setcorrImg(self):
+        self.img =ImageTk.PhotoImage(Image.open("./Images/k1.png"))
+ 
+
+class King(Piece):
+    def __init__(self, col):
+        Piece.__init__(self,col, "a")
+        Piece.y = 0
+        print(self.col)
+    def moveset(self):
+        x = self.x
+        y = self.y
+        available = [ (x+1,y),(x+1,y+1),(x+1,y-1),(x,y+1),(x,y-1),(x-1,y+1),(x-1,y),(x-1,y-1) ]
+        return available
+        print("lower")
+    def setcorrImg(self):
+        if col == 1:
+            self.img=ImageTk.PhotoImage(Image.open("./Images/k1.png"))
+        else :
+            self.img=ImageTk.PhotoImage(Image.open("./Images/k0.png"))
+
+
+
 
 class Board():
     def __init__(self):
@@ -39,4 +67,10 @@ class Board():
  
 
 
+x = King(0)
+x.moveset()
 
+y = Piece(0, "k")
+y.moveset()
+print(x.x)
+print(x.y)
