@@ -61,7 +61,7 @@ class GUI:
             y1 = self.y1
             self.firstmove = True
             if (self.trymove(x1, y1, a,b)):
-                self.redraw(x1, y1 ,a ,b)
+                print("success")
             self.canvas1.delete(self.border)
             print(self.pieces)
 
@@ -71,6 +71,7 @@ class GUI:
         ret_val =  self.Board.move(x1,y1,x,y)
         self.drawwholeBoard()
         print(self.Board)
+        return ret_val
         
 
     def redraw(self, x1 ,y1 ,a ,b):
