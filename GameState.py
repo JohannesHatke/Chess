@@ -1,3 +1,4 @@
+from tkinter import *
 from PIL import ImageTk,Image
 
 class Piece():
@@ -5,22 +6,23 @@ class Piece():
         self.col = col #int value 0 for white 1 for black
         self.ty = typ #Placeholder
         self.img = None
-        self.x = 1
+        self.img_onc = None
+        self.x = 0
         self.y = 0
+        self.changed = True
     def __repr__(self):
         return self.ty
     def __str__(self):
         return self.ty
     def moveset(self):
         print("top")
-    def setcorrImg(self):
-        self.img =ImageTk.PhotoImage(Image.open("./Images/k1.png"))
  
-
 class King(Piece):
-    def __init__(self, col):
+    def __init__(self, col, x, y):
         Piece.__init__(self,col, "a")
-        Piece.y = 0
+        Piece.x = x
+        Piece.y = y
+        Piece.ty = "k" + str(col)
         print(self.col)
     def moveset(self):
         x = self.x
@@ -28,29 +30,41 @@ class King(Piece):
         available = [ (x+1,y),(x+1,y+1),(x+1,y-1),(x,y+1),(x,y-1),(x-1,y+1),(x-1,y),(x-1,y-1) ]
         return available
         print("lower")
-    def setcorrImg(self):
-        if col == 1:
-            self.img=ImageTk.PhotoImage(Image.open("./Images/k1.png"))
-        else :
-            self.img=ImageTk.PhotoImage(Image.open("./Images/k0.png"))
-
-
-
+    def getKey(self):
+        return "k" + str(self.col)
+    def __repr__(self):
+        return self.getKey()
 
 class Board():
     def __init__(self):
         self.Tiles = [ [None for x in range(8)] for y in range(8) ]
+        self.Tiles[0][0] = King(0,0,0)
+        self.Tiles[1][0] = King(1,0,0)
+        turn = 0 # 0 for white , 1 for black
 
     def move(self , x1 , y1 , x,y ):
+        #check Turn with color of x1 y1
+
         tomove = self.Tiles[x1][y1]
-        self.Tiles[x1][y1] = None
-        self.Tiles[x][y] = tomove
+        if tomove is not None and self.Tiles [x][y] is None:
+            self.Tiles[x1][y1] = None
+            tomove.x = x
+            tomove.y = y
+            self.Tiles[x][y] = tomove
+            self.Tiles[x][y].changed = True
+        return True
 
     def putPiece(self, piece, x , y ):
         self.Tiles[x][y] = piece
 
     def getxl(self, x) -> list:
         return self.Tiles[x]
+
+    def changeTurn(self):
+        if self.turn == 0:
+            self.turn = 1
+        else:
+            self.turn = 0
 
     def __repr__(self):
         x = ""
@@ -59,18 +73,7 @@ class Board():
                 if(self.Tiles[i][j] is None):
                     x = x + "N "
                 else:
-                    x = x +str(self.Tiles[i][j])
+                    x = x +repr(self.Tiles[i][j])
             x = x + "\n"
 
         return x
-        
- 
-
-
-x = King(0)
-x.moveset()
-
-y = Piece(0, "k")
-y.moveset()
-print(x.x)
-print(x.y)
