@@ -59,12 +59,49 @@ class Rook(Piece):
     def __repr__(self):
         return self.getKey()
 
+class Bishop(Piece):
+    def __init__(self,col,x,y):
+        super().__init__(col)
+        self.setx(x)
+        self.sety(y)
+
+    def moveset(self, board):
+
+        return board.checkdiagonal(self.x,self.y)
+
+    def getKey(self):
+        return "b" + str(self.col)
+
+    def __repr__(self):
+        return self.getKey()
+
+class Queen(Piece):
+    def __init__(self,col,x,y):
+        super().__init__(col)
+        self.setx(x)
+        self.sety(y)
+
+    def moveset(self, board):
+
+        return board.checkdiagonal(self.x,self.y) + board.checklines(self.x,self.y)
+
+    def getKey(self):
+        return "q" + str(self.col)
+
+    def __repr__(self):
+        return self.getKey()
+
+
+
+
 class Board():
     def __init__(self):
         self.Tiles = [ [None for x in range(8)] for y in range(8) ]
         self.Tiles[0][0] = King(0,0,0)
         self.Tiles[3][0] = King(1,3,0)
         self.Tiles[2][2] = Rook(0,2,2)
+        self.Tiles[7][7] = Bishop(1,7,7)
+        self.Tiles[4][4] = Queen(0,4,4)
         print(f"was sit"+ str(self.Tiles[3][0]))
         #self.Tiles[1][0] = King(1,0,0)
         turn = 0 # 0 for white , 1 for black
@@ -98,7 +135,46 @@ class Board():
             tomove.sety(y)
 
     def checkdiagonal(self, x1 ,y1):
-        pass
+        result = []
+        i = 1
+        while i+x1 <8 and i + y1 < 8:
+            if self.Tiles[x1+i][y1+i] is None:
+                result += [(x1+i,y1+i)]
+                i+=1
+            else:
+                if self.Tiles[x1+i][y1+i].col is not self.Tiles[x1][y1].col:
+                    result += [(x1+i, y1+i)]
+                i = 8
+        i = 1
+        while x1+i <8 and y1-i > -1:
+            if self.Tiles[x1+i][y1-i] is None:
+                result += [(x1+i,y1-i)]
+                i+=1
+            else:
+                if self.Tiles[x1+i][y1-i].col is not self.Tiles[x1][y1].col:
+                    result += [(x1+i, y1-i)]
+                i = 8
+        i = 1
+        while x1-i >-1 and i + y1 < 8:
+            if self.Tiles[x1-i][y1+i] is None:
+                result += [(x1-i,y1+i)]
+                i += 1
+            else:
+                if self.Tiles[x1-i][y1+i].col is not self.Tiles[x1][y1].col:
+                    result += [(x1-i, y1+i)]
+                i = 8
+        i = -1
+        while i+x1 >-1 and i + y1 >-1 :
+            if self.Tiles[x1+i][y1+i] is None:
+                result += [(x1+i,y1+i)]
+                i -= 1
+            else:
+                if self.Tiles[x1+i][y1+i].col is not self.Tiles[x1][y1].col:
+                    result += [(x1+i, y1+i)]
+                i = -8
+
+        
+        return result
     def checklines(self,x1,y1):
         #horizontal:
         tempresult = [ ]
