@@ -33,11 +33,27 @@ class King(Piece):
     def moveset(self, board):
         x = self.x
         y = self.y
-        print(f"calc Moveset {x}{y}")
-
         available = [ (x+1,y),(x+1,y+1),(x+1,y-1),(x,y+1),(x,y-1),(x-1,y+1),(x-1,y),(x-1,y-1) ]
-        return available
-        print("lower")
+        if self.col == 0:
+            invcol = 1
+        else:
+            invcol = 0
+        attacked = board.underattack(invcol)
+        result = []
+        print("-----------------------------------------------King----------------------------------------")
+        for i in range(len(available)):
+            if available[i] in attacked:
+                print(f"this is attacked:{available[i]}")
+
+            else:
+                print(f"this is NOT attacked:{available[i]}")
+                (b,c) = available[i]
+                result += [(b,c)]
+
+        print(f"this is the result:{result}")
+                
+        return result
+        
     def getKey(self):
         return "k" + str(self.col)
     def __repr__(self):
@@ -136,7 +152,6 @@ class Pawn(Piece):
 
     def moveset(self, board):
         #need to define direction using d
-        #d = 1 + self.col * -2 #black is 0
         d = -1 + self.col * 2
         available = []
         if board.Tiles[self.x][self.y + d*1] is None:
@@ -335,12 +350,14 @@ class Board():
         return result
     def underattack(self, col):
         #col of the Player thats attacking
+        result = []
         for i in range(0,8):
             for j in range(0,8):
-                if self.Tiles[i][j].col == col:
-                    pass
+                if self.Tiles[i][j] is not None:
+                    if self.Tiles[i][j].col == col and not (self.Tiles[i][j].getKey() == "k0" or self.Tiles[i][j].getKey() == "k1"):
+                        result += self.Tiles[i][j].moveset(self)
 
-
+        return result
 
     
             
@@ -415,9 +432,10 @@ class Board():
         for j in range(8):
             for i in range(8):
                 if(self.Tiles[i][j] is None):
-                    x = x + "N "
+                    x = x + "N"
                 else:
                     x = x +repr(self.Tiles[i][j])
+                x += "\t"
             x = x + "\n"
 
         return x
