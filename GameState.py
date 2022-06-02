@@ -10,6 +10,8 @@ class Piece():
         self.x = 0
         self.y = 0
         self.changed = True
+    def domove(self,board,x ,y):
+        pass #placeholder for Pawn
     def __repr__(self):
         return self.ty
     def __str__(self):
@@ -91,6 +93,90 @@ class Queen(Piece):
     def __repr__(self):
         return self.getKey()
 
+class Knight(Piece):
+    def __init__(self,col,x,y):
+        super().__init__(col)
+        self.setx(x)
+        self.sety(y)
+
+    def moveset(self, board):
+        pass
+
+
+    def getKey(self):
+        return "kn" + str(self.col)
+
+    def __repr__(self):
+        return self.getKey()
+
+
+class Pawn(Piece):
+    def __init__(self,col,x,y):
+        super().__init__(col)
+        self.setx(x)
+        self.sety(y)
+        self.moved = False
+        self.enpassant = False
+
+    def moveset(self, board):
+        #need to define direction using d
+        #d = 1 + self.col * -2 #black is 0
+        d = -1 + self.col * 2
+        available = []
+        if board.Tiles[self.x][self.y + d*1] is None:
+            available += [(self.x,self.y+d*1)]
+        if not self.moved:
+            available += [(self.x,self.y+d*2)]
+        if board.Tiles[self.x+1][self.y + d*1] is not None:
+            if board.Tiles[self.x+1][self.y + d*1].col != self.col:
+                available += [(self.x+1,self.y+d*1)]
+
+        if board.Tiles[self.x-1][self.y + d*1] is not None:
+            if board.Tiles[self.x-1][self.y + d*1].col != self.col:
+                available += [(self.x-1,self.y+d*1)]
+
+        # check enpassant 
+        invcol = 0 #color of enemy
+        if self.col == 0:
+            invcol = 1
+
+        if board.Tiles[self.x-1][self.y] is not None:
+            if board.Tiles[self.x-1][self.y].getKey() == "p"+str(invcol):
+                if board.Tiles[self.x-1][self.y].enpassant == True:
+                    available += [(self.x-1,self.y+d*1)]
+
+        return available
+        
+
+
+
+    def domove(self, board, x ,y):
+        self.moved = True
+        self.enpassant = False
+        y1 = self.y
+        x1 = self.x
+        diff = y -y1
+
+        invcol = 0 #color of enemy
+        if self.col == 0:
+            invcol = 1
+
+        if diff == 2 or diff == -2:
+            self.enpassant = True
+        #check if move im doint is an enpassant move:
+        if board.Tiles[self.x-1][self.y] is not None:
+            if board.Tiles[self.x-1][self.y].getKey() == "p"+str(invcol) and board.Tiles[x][y] is None:
+                board.Tiles[self.x-1][self.y] = None
+        if board.Tiles[self.x+1][self.y] is not None:
+            if board.Tiles[self.x+1][self.y].getKey() == "p"+str(invcol) and board.Tiles[x][y] is None:
+                board.Tiles[self.x+1][self.y] = None
+        
+
+    def getKey(self):
+        return "p" + str(self.col)
+
+    def __repr__(self):
+        return self.getKey()
 
 
 
@@ -102,6 +188,9 @@ class Board():
         self.Tiles[2][2] = Rook(0,2,2)
         self.Tiles[7][7] = Bishop(1,7,7)
         self.Tiles[4][4] = Queen(0,4,4)
+        self.Tiles[5][6] = Pawn(0,5,6)
+        self.Tiles[6][1] = Pawn(1,6,1)
+
         print(f"was sit"+ str(self.Tiles[3][0]))
         #self.Tiles[1][0] = King(1,0,0)
         turn = 0 # 0 for white , 1 for black
@@ -120,6 +209,7 @@ class Board():
             print("notinmoveset")
             return False
         if self.Tiles[x][y] is None:
+            tomove.domove(self,x,y)#has to be called before changing coordinate attributes
             print("hä")
             self.Tiles[x1][y1] = None
             tomove.setx(x) 
@@ -128,6 +218,7 @@ class Board():
             self.Tiles[x][y].changed = True
             return True
         elif self.Tiles[x][y].col is not tomove.col: #remove after putting captures in Kings moveset
+            tomove.domove(self,x,y)#has to be called before changing coordinate attributes
             self.Tiles[x1][y1] = None
             self.Tiles[x][y] = None
             self.Tiles[x][y] = tomove
@@ -225,6 +316,13 @@ class Board():
         
         print(result)
         return result
+    def underattack(self, col):
+        #col of the Player thats attacking
+        for i in range(0,8):
+            for j in range(0,8):
+                if self.Tiles[i][j].col == col:
+                    pass
+
 
 
     

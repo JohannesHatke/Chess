@@ -30,6 +30,8 @@ class GUI:
         self.b0_img = ImageTk.PhotoImage(Image.open("./Images/b0.png"))
         self.q1_img = ImageTk.PhotoImage(Image.open("./Images/q1.png"))
         self.q0_img = ImageTk.PhotoImage(Image.open("./Images/q0.png"))
+        self.p1_img = ImageTk.PhotoImage(Image.open("./Images/p1.png"))
+        self.p0_img = ImageTk.PhotoImage(Image.open("./Images/p0.png"))
     
 
         self.img_dict = {
@@ -40,7 +42,9 @@ class GUI:
                 "b1":self.b1_img,
                 "b0":self.b0_img,
                 "q1":self.q1_img,
-                "q0":self.q0_img
+                "q0":self.q0_img,
+                "p1":self.p1_img,
+                "p0":self.p0_img
                 } 
         self.pieces = [ [None for x in range(8)] for y in range(8) ]
 
