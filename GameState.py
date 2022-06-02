@@ -100,8 +100,24 @@ class Knight(Piece):
         self.sety(y)
 
     def moveset(self, board):
-        pass
+        x = self.x
+        y = self.y
+        L = [ (x+2,y+1),(x+1,y+2), (x+2,y-1),(x+1,y-2), (x-2,y+1),(x-1,y+2), (x-1,y-2),(x-2,y-1) ]
+        
+        def inbounds(val) -> bool:
+            return (val>-1) and (val<8)
 
+        available = [ ]
+        for e in L:
+            i = e[0]
+            j = e[1]
+            if inbounds(i) and inbounds(j):
+                if board.Tiles[i][j] is None:
+                    available += [e]
+                else:
+                    if board.Tiles[i][j].col != self.col:
+                        available += [e]
+        return available
 
     def getKey(self):
         return "kn" + str(self.col)
@@ -125,8 +141,8 @@ class Pawn(Piece):
         available = []
         if board.Tiles[self.x][self.y + d*1] is None:
             available += [(self.x,self.y+d*1)]
-        if not self.moved:
-            available += [(self.x,self.y+d*2)]
+            if not self.moved and board.Tiles[self.x][self.y+d*2] is None:
+                available += [(self.x,self.y+d*2)]
         if board.Tiles[self.x+1][self.y + d*1] is not None:
             if board.Tiles[self.x+1][self.y + d*1].col != self.col:
                 available += [(self.x+1,self.y+d*1)]
@@ -190,6 +206,7 @@ class Board():
         self.Tiles[4][4] = Queen(0,4,4)
         self.Tiles[5][6] = Pawn(0,5,6)
         self.Tiles[6][1] = Pawn(1,6,1)
+        self.Tiles[0][7] = Knight(1,0,7)
 
         print(f"was sit"+ str(self.Tiles[3][0]))
         #self.Tiles[1][0] = King(1,0,0)
