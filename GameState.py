@@ -2,9 +2,9 @@ from tkinter import *
 from PIL import ImageTk,Image
 
 class Piece():
-    def __init__(self,col, typ):
+    def __init__(self,col):
         self.col = col #int value 0 for white 1 for black
-        self.ty = typ #Placeholder
+        self.ty = "a" #Placeholder
         self.img = None
         self.img_onc = None
         self.x = 0
@@ -14,7 +14,7 @@ class Piece():
         return self.ty
     def __str__(self):
         return self.ty
-    def moveset(self):
+    def moveset(self, board):
         print("top")
     def setx(self,x):
         self.x = x
@@ -23,12 +23,12 @@ class Piece():
  
 class King(Piece):
     def __init__(self, col, x, y):
-        Piece.__init__(self,col, "a")
-        self.x = x
-        self.y = y
+        super().__init__(col)
+        self.setx(x)
+        self.sety(y)
         self.ty = "k" + str(col)
         print(self.col)
-    def moveset(self):
+    def moveset(self, board):
         x = self.x
         y = self.y
         print(f"calc Moveset {x}{y}")
@@ -41,11 +41,30 @@ class King(Piece):
     def __repr__(self):
         return self.getKey()
 
+class Rook(Piece):
+    def __init__(self, col,x, y):
+        super().__init__(col)
+        self.setx(x)
+        self.sety(y)
+        self.ty = "r" + str(col)
+        print(self.col)
+
+    def moveset(self, board):
+
+        return board.checklines(self.x,self.y)
+
+    def getKey(self):
+        return "r" + str(self.col)
+
+    def __repr__(self):
+        return self.getKey()
+
 class Board():
     def __init__(self):
         self.Tiles = [ [None for x in range(8)] for y in range(8) ]
         self.Tiles[0][0] = King(0,0,0)
         self.Tiles[3][0] = King(1,3,0)
+        self.Tiles[2][2] = Rook(0,2,2)
         print(f"was sit"+ str(self.Tiles[3][0]))
         #self.Tiles[1][0] = King(1,0,0)
         turn = 0 # 0 for white , 1 for black
@@ -57,8 +76,8 @@ class Board():
         tomove = self.Tiles[x1][y1]
         if tomove is None:
             return False
-        if not (x,y) in tomove.moveset():
-            print(tomove.moveset())
+        if not (x,y) in tomove.moveset(self): #moveset includes captures
+            print(tomove.moveset(self))
             print(tomove.x)
             print(tomove.y)
             print("notinmoveset")
@@ -71,51 +90,64 @@ class Board():
             self.Tiles[x][y] = tomove
             self.Tiles[x][y].changed = True
             return True
-        elif self.Tiles[x][y].col is not tomove.col:
+        elif self.Tiles[x][y].col is not tomove.col: #remove after putting captures in Kings moveset
             self.Tiles[x1][y1] = None
             self.Tiles[x][y] = None
             self.Tiles[x][y] = tomove
             tomove.setx(x)
             tomove.sety(y)
 
-    def checkdiagonal(self, x1 ,y1 ,x ,y):
+    def checkdiagonal(self, x1 ,y1):
         pass
     def checklines(self,x1,y1):
         #horizontal:
         tempresult = [ ]
-        result = [ ]
+        result = []
         ok = True
         i = x1 +1
-        while i < 8:
-            if self.Tiles[i][y1]:
-                result + [(i,y1)]
+        print(i)
+        print("checklines")
+        while (i < 8):
+            print(i)
+            if self.Tiles[i][y1] is None:
+                print(i)
+                result += [(i,y1)]
                 i += 1
             else:
+                if self.Tiles[i][y1].col is not self.Tiles[x1][y1].col:
+                    result += [(i,y1)]
                 i = 8
         i = x1 -1
         while i > -1:
-            if self.Tiles[i][y1]:
-                result + [(i,y1)]
+            if self.Tiles[i][y1] is None:
+                result += [(i,y1)]
                 i -= 1
             else:
+                if self.Tiles[i][y1].col is not self.Tiles[x1][y1].col:
+                    result += [(i,y1)]
                 i = -8
         #vertikal:
         i = y1 +1
         while i < 8:
-            if self.Tiles[x1][i]:
-                result + [(x1, i)]
+            if self.Tiles[x1][i] is None:
+                result += [(x1, i)]
                 i += 1
             else:
+                if self.Tiles[x1][i].col is not self.Tiles[x1][y1].col:
+                    result += [(x1,i)]
                 i=8
 
         i = y1 -1
         while i > -1:
-            if self.Tiles[x1][i]:
-                result + [(x1,i)]
+            if self.Tiles[x1][i] is None:
+                result += [(x1,i)]
                 i -=1
             else:
+                if self.Tiles[x1][i].col is not self.Tiles[x1][y1].col:
+                    result += [(x1,i)]
                 i = -1
         
+        print(result)
         return result
 
 
