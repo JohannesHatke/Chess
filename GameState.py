@@ -219,14 +219,24 @@ class Board():
 
         print(f"was sit"+ str(self.Tiles[3][0]))
         #self.Tiles[1][0] = King(1,0,0)
-        turn = 0 # 0 for white , 1 for black
+        self.turn = 0 # 0 for white , 1 for black
+    def nextturn(self):
+        if self.turn == 0:
+            self.turn = 1
+        else:
+            self.turn = 0
 
     def move(self , x1 , y1 , x,y ):
+        #checks all the requirements, before calling actualmove, when they are met
         #check Turn with color of x1 y1
 
         print(f"{x1}|{y1} -> {x}|{y}")
         tomove = self.Tiles[x1][y1]
         if tomove is None:
+            return False
+        #normal checks
+        if tomove.col != self.turn:
+            print("-------------------------------------------Wrong Color----------------------------------------------")
             return False
         if not (x,y) in tomove.moveset(self): #moveset includes captures
             print(tomove.moveset(self))
@@ -235,21 +245,22 @@ class Board():
             print("notinmoveset")
             return False
         if self.Tiles[x][y] is None:
-            tomove.domove(self,x,y)#has to be called before changing coordinate attributes
-            print("hä")
-            self.Tiles[x1][y1] = None
-            tomove.setx(x) 
-            tomove.sety(y)
-            self.Tiles[x][y] = tomove
-            self.Tiles[x][y].changed = True
+            self.actualmove(x1,y1,x,y)
             return True
         elif self.Tiles[x][y].col is not tomove.col: #keep
-            tomove.domove(self,x,y)#has to be called before changing coordinate attributes
-            self.Tiles[x1][y1] = None
-            self.Tiles[x][y] = None
-            self.Tiles[x][y] = tomove
-            tomove.setx(x)
-            tomove.sety(y)
+            self.actualmove(x1,y1,x,y)
+            return True
+
+    def actualmove(self, x1,y1, x,y):
+        #function that actually changes coordinates and does everything for move
+        self.nextturn()
+        tomove = self.Tiles[x1][y1]
+        tomove.domove(self,x,y)#has to be called before changing coordinate attributes
+        self.Tiles[x1][y1] = None
+        self.Tiles[x][y] = None
+        self.Tiles[x][y] = tomove
+        tomove.setx(x)
+        tomove.sety(y)
 
     def checkdiagonal(self, x1 ,y1):
         result = []
