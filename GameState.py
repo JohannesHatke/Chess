@@ -128,11 +128,7 @@ class Knight(Piece):
             i = e[0]
             j = e[1]
             if inbounds(i) and inbounds(j):
-                if board.Tiles[i][j] is None:
-                    available += [e]
-                else:
-                    if board.Tiles[i][j].col != self.col:
-                        available += [e]
+                available += [e]
         return available
 
     def getKey(self):
@@ -159,12 +155,10 @@ class Pawn(Piece):
             if not self.moved and board.Tiles[self.x][self.y+d*2] is None:
                 available += [(self.x,self.y+d*2)]
         if board.Tiles[self.x+1][self.y + d*1] is not None:
-            if board.Tiles[self.x+1][self.y + d*1].col != self.col:
-                available += [(self.x+1,self.y+d*1)]
+            available += [(self.x+1,self.y+d*1)]
 
         if board.Tiles[self.x-1][self.y + d*1] is not None:
-            if board.Tiles[self.x-1][self.y + d*1].col != self.col:
-                available += [(self.x-1,self.y+d*1)]
+            available += [(self.x-1,self.y+d*1)]
 
         # check enpassant 
         invcol = 0 #color of enemy
@@ -249,7 +243,7 @@ class Board():
             self.Tiles[x][y] = tomove
             self.Tiles[x][y].changed = True
             return True
-        elif self.Tiles[x][y].col is not tomove.col: #remove after putting captures in Kings moveset
+        elif self.Tiles[x][y].col is not tomove.col: #keep
             tomove.domove(self,x,y)#has to be called before changing coordinate attributes
             self.Tiles[x1][y1] = None
             self.Tiles[x][y] = None
@@ -265,8 +259,7 @@ class Board():
                 result += [(x1+i,y1+i)]
                 i+=1
             else:
-                if self.Tiles[x1+i][y1+i].col is not self.Tiles[x1][y1].col:
-                    result += [(x1+i, y1+i)]
+                result += [(x1+i, y1+i)]
                 i = 8
         i = 1
         while x1+i <8 and y1-i > -1:
@@ -274,8 +267,7 @@ class Board():
                 result += [(x1+i,y1-i)]
                 i+=1
             else:
-                if self.Tiles[x1+i][y1-i].col is not self.Tiles[x1][y1].col:
-                    result += [(x1+i, y1-i)]
+                result += [(x1+i, y1-i)]
                 i = 8
         i = 1
         while x1-i >-1 and i + y1 < 8:
@@ -283,8 +275,7 @@ class Board():
                 result += [(x1-i,y1+i)]
                 i += 1
             else:
-                if self.Tiles[x1-i][y1+i].col is not self.Tiles[x1][y1].col:
-                    result += [(x1-i, y1+i)]
+                result += [(x1-i, y1+i)]
                 i = 8
         i = -1
         while i+x1 >-1 and i + y1 >-1 :
@@ -292,8 +283,7 @@ class Board():
                 result += [(x1+i,y1+i)]
                 i -= 1
             else:
-                if self.Tiles[x1+i][y1+i].col is not self.Tiles[x1][y1].col:
-                    result += [(x1+i, y1+i)]
+                result += [(x1+i, y1+i)]
                 i = -8
 
         
@@ -313,8 +303,7 @@ class Board():
                 result += [(i,y1)]
                 i += 1
             else:
-                if self.Tiles[i][y1].col is not self.Tiles[x1][y1].col:
-                    result += [(i,y1)]
+                result += [(i,y1)]
                 i = 8
         i = x1 -1
         while i > -1:
@@ -322,8 +311,7 @@ class Board():
                 result += [(i,y1)]
                 i -= 1
             else:
-                if self.Tiles[i][y1].col is not self.Tiles[x1][y1].col:
-                    result += [(i,y1)]
+                result += [(i,y1)]
                 i = -8
         #vertikal:
         i = y1 +1
@@ -332,8 +320,7 @@ class Board():
                 result += [(x1, i)]
                 i += 1
             else:
-                if self.Tiles[x1][i].col is not self.Tiles[x1][y1].col:
-                    result += [(x1,i)]
+                result += [(x1,i)]
                 i=8
 
         i = y1 -1
@@ -342,8 +329,7 @@ class Board():
                 result += [(x1,i)]
                 i -=1
             else:
-                if self.Tiles[x1][i].col is not self.Tiles[x1][y1].col:
-                    result += [(x1,i)]
+                result += [(x1,i)]
                 i = -1
         
         print(result)
